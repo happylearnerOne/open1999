@@ -1,5 +1,11 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { HttpModule } from '@angular/http';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
+import { AppService } from './app.service';
 
 import { AppComponent } from './app.component';
 
@@ -8,9 +14,15 @@ import { AppComponent } from './app.component';
     AppComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    FormsModule,
+    ReactiveFormsModule,
+    HttpModule,
+    NgbModule.forRoot()
   ],
-  providers: [],
+  providers: [
+  	AppService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
