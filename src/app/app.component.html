@@ -1,16 +1,16 @@
 
 <div class="container">
   <h1>Open1999</h1>
-  <form  [formGroup]="searchForm" (ngSubmit)="onSubmit(searchForm.value)">
+  <form  [formGroup]="searchForm" (ngSubmit)="searchLocation(searchForm.value)">
     <div class="form-group row" >
       <label for="area" class="col-sm-1 col-form-label">區域</label>
-      <div class="col-sm-10">
-        <select class="form-control" id="area">
-          <option *ngFor="let item of zipCode">{{}}</option>          
+      <div class="col-sm-2">
+        <select class="form-control" id="area" formControlName="area">
+          <option *ngFor="let item of zipCode" value="{{item.Code}}">{{item.Name}}</option>
         </select>
       </div>
     </div>
-    <button type="submit" (click)="searchLocation()">取得通報資料</button>
+    <button type="submit">取得通報資料</button>
   </form>
 
   <br/>
@@ -25,8 +25,8 @@
     <tr *ngFor="let location of locations">
       <td>{{location.FileNo_}}</td>
       <td>{{location.Cre_Date_}}</td>
-      <td>{{location.ZipName}}</td>
-      <td>{{location.BeforeDesc_}}</td>    
+      <td>{{location.ZipName_}}</td>
+      <td>{{location.BeforeDesc_}}</td>
     </tr>
   </table>
 
