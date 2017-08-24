@@ -1,6 +1,9 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone, ElementRef, ViewChild } from '@angular/core';
 import { AppService } from './app.service';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
+
+
+
 
 @Component({
   selector: 'app-root',
@@ -9,10 +12,27 @@ import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/fo
 })
 export class AppComponent {
 
+  ctr_lat: number = 22.856313;
+  ctr_lng: number = 120.435117;
+
+  lat : number = 51.578418;
+  lng : number = 7.809007;
+
+  lats = [51.678418, 45.678418];
+  lngs = [7.809007, 7.809007];
+
+
+
+  positions = [
+  ];
+
+  // lat: number = 45.678418;
+  // lng: number = 7.809007;
   searchForm : FormGroup;
   locations_orig : any;
   locations : any;
 
+  fileNo : string = "";
 	zipCode = [
         { "Code" : "800", "Name" : "新興區" },
         { "Code" : "801", "Name" : "前金區" },
@@ -54,6 +74,8 @@ export class AppComponent {
         { "Code" : "852", "Name" : "茄萣區" }
   ];
 
+  @ViewChild('infoWindow') el:ElementRef;
+
 	constructor(fb: FormBuilder,
 				private appService : AppService,
 				private ngZone : NgZone){
@@ -65,14 +87,30 @@ export class AppComponent {
     console.log(searchForm);
 		this.appService.searchLocation()
 			.then((result) => {
-
+        this.positions = [];
         if(searchForm.area == null){
           this.locations = result;
+          for(var item of this.locations) {
+            if(item.Lat_ != undefined && item.Lat_ != "") {
+              this.positions.push({fileNo: item.FileNo_, lat: Number(item.Lat_), lng: Number(item.Lng_), informDesc: item.InformDesc_, address: item.ZipName_+item.address_, beforeDesc: item.BeforeDesc_});
+            }
+            // break;
+          }
+          console.log("pos=", this.positions);
+
+          console.log("el=", this.el);
+          
         } else {
           this.locations_orig = result;
           this.locations = this.locations_orig.filter(function(item){
             return item.zipcode_ == searchForm.area;
           });
+          for(var item of this.locations) {
+            if(item.Lat_ != undefined && item.Lat_ != "") {
+              this.positions.push({fileNo: item.FileNo_, lat: Number(item.Lat_), lng: Number(item.Lng_), informDesc: item.InformDesc_, address: item.ZipName_+item.address_, beforeDesc: item.BeforeDesc_});
+            }
+            // break;
+          }
         }
 
         console.log(this.locations);
@@ -85,4 +123,19 @@ export class AppComponent {
 				console.log(error);
 			});
 	}
+
+  showMapMarker(window, item) {
+     console.log("in showMarker=", this.el);
+     if(item.Lat_ == undefined || item.Lat_ == ""){
+       console.log("無法顯示座標");
+     } else {
+       this.fileNo = item.FileNo_;
+       // this.positions.push({fileNo: item.FileNo_, lat: Number(item.Lat_), lng: Number(item.Lng_), label: item.InformDesc_, address: item.ZipName_+item.address_});
+     }
+  }
+  //gm.lastOpen?.close(); gm.lastOpen = infoWindow
+  onMarkerClick(gm) {
+    this.fileNo = "";
+    console.log("marker=", gm);
+  }
 }

@@ -1,4 +1,3 @@
-
 <div class="container">
   <h1>Open1999</h1>
   <form  [formGroup]="searchForm" (ngSubmit)="searchLocation(searchForm.value)">
@@ -10,24 +9,48 @@
         </select>
       </div>
     </div>
-    <button type="submit">取得通報資料</button>
+    <button type="submit" class="btn btn-primary">取得通報資料</button>
   </form>
 
   <br/>
   <br/>
-  <table border="1" style="border-color: black">
-    <tr>
-      <td>檔案編號</td>
-      <td>建立時間</td>
-      <td>區域</td>
-      <td>內容</td>
-    </tr>
-    <tr *ngFor="let location of locations">
-      <td>{{location.FileNo_}}</td>
-      <td>{{location.Cre_Date_}}</td>
-      <td>{{location.ZipName_}}</td>
-      <td>{{location.BeforeDesc_}}</td>
-    </tr>
+  <agm-map #gm [latitude]="ctr_lat" [longitude]="ctr_lng">
+    <agm-marker [latitude]="pos.lat" 
+                [longitude]="pos.lng" 
+                [title]="pos.label"  #gmm
+                (markerClick)="gm.lastOpen?.close(); gm.lastOpen = infoWindow; onMarkerClick(gm)"
+                *ngFor="let pos of positions"> 
+      <agm-info-window #infoWindow [isOpen]="pos.fileNo == fileNo">
+        名稱：{{pos.informDesc}} <br/>
+        詳細內容：{{pos.beforeDesc}}<br/>
+        詳細位址：{{pos.address}}
+      </agm-info-window>
+    </agm-marker>
+  </agm-map>
+  <br/>
+  <br/>
+  <table class="table table-hover table-sm">
+    <thead class="thead-default">
+      <tr>
+        <td>檔案編號</td>
+        <td>建立時間</td>
+        <td>區域</td>
+        <td>座標</td>
+        <td>內容</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let location of locations">
+        <td>{{location.FileNo_}}</td>
+        <td>{{location.Cre_Date_}}</td>
+        <td>{{location.ZipName_}}</td>
+        <td>
+          <div *ngIf="location.Lat_ == undefined || location.Lat_ == ''">無座標</div>
+          <button type="button" class="btn btn-primary" (click)="gm.lastOpen?.close(); gm.lastOpen = null ; showMapMarker(infoWindow, location)" *ngIf="location.Lat_ != undefined && location.Lat_ != ''">顯示座標</button>
+        </td>
+        <td>{{location.BeforeDesc_}}</td>
+      </tr>
+    </tbody>
   </table>
 
 </div>
